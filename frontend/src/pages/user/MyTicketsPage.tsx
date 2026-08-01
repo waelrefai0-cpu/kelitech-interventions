@@ -112,26 +112,26 @@ export function MyTicketsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-4">
-          <div className="grid h-14 w-14 place-items-center rounded-lg bg-blue-50 text-blue-600 shadow-sm">
+      <div className="flex min-w-0 flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-blue-50 text-blue-600 shadow-sm sm:h-14 sm:w-14">
             <ViewTicketIcon />
           </div>
-          <div>
-            <h1 className="text-3xl font-bold leading-tight text-slate-950">Mes interventions</h1>
-            <p className="mt-1 text-base text-slate-500">Historique et suivi de vos demandes d'intervention.</p>
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold leading-tight text-slate-950 sm:text-3xl">Mes interventions</h1>
+            <p className="mt-1 truncate text-sm text-slate-500 sm:text-base">Historique et suivi de vos demandes d'intervention.</p>
           </div>
         </div>
-        <Button component={Link} to="/user/new-ticket" variant="contained" size="large" startIcon={<AddOutlinedIcon />} sx={{ minHeight: 52, px: 3 }}>
+        <Button component={Link} to="/user/new-ticket" variant="contained" size="large" startIcon={<AddOutlinedIcon />} sx={{ minHeight: 48, px: 3, width: { xs: "100%", sm: "auto" } }}>
           Nouvelle demande
         </Button>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         {metrics.map((metric) => (
-          <Paper key={metric.label} elevation={0} className="rounded-lg border border-slate-200 bg-white p-5 shadow-soft transition hover:-translate-y-0.5 hover:shadow-lg">
+          <Paper key={metric.label} elevation={0} className="rounded-lg border border-slate-200 bg-white p-4 shadow-soft transition hover:-translate-y-0.5 hover:shadow-lg sm:p-5">
             <div className="flex items-center gap-4">
-              <div className="grid h-14 w-14 place-items-center rounded-lg" style={{ color: metric.color, backgroundColor: metric.bg }}>
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-lg sm:h-14 sm:w-14" style={{ color: metric.color, backgroundColor: metric.bg }}>
                 {metric.icon}
               </div>
               <div>
@@ -151,7 +151,7 @@ export function MyTicketsPage() {
 
       {!loading && tickets.length ? (
         <Paper elevation={0} className="min-w-0 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-soft">
-          <div className="grid gap-3 border-b border-slate-200 p-5 lg:grid-cols-[minmax(240px,1fr),150px,150px,auto] xl:grid-cols-[minmax(260px,1fr),145px,145px,145px,145px,auto]">
+          <div className="grid gap-3 border-b border-slate-200 p-4 sm:p-5 lg:grid-cols-[minmax(240px,1fr),150px,150px,auto] xl:grid-cols-[minmax(260px,1fr),145px,145px,145px,145px,auto]">
             <TextField
               size="small"
               value={q}
@@ -197,7 +197,7 @@ export function MyTicketsPage() {
                 </MenuItem>
               ))}
             </TextField>
-            <Button variant="outlined" startIcon={<RefreshOutlinedIcon />} onClick={resetFilters} sx={{ minHeight: 40 }}>
+            <Button variant="outlined" startIcon={<RefreshOutlinedIcon />} onClick={resetFilters} sx={{ minHeight: 40, overflow: "hidden" }}>
               Reinitialiser
             </Button>
             <Button variant="outlined" startIcon={<FilterAltOutlinedIcon />} sx={{ display: { xs: "inline-flex", xl: "none" }, minHeight: 40 }}>
@@ -211,7 +211,47 @@ export function MyTicketsPage() {
             </div>
           ) : (
             <>
-              <TableContainer sx={{ maxWidth: "100%", overflowX: "auto" }}>
+              <div className="grid gap-3 p-4 md:hidden">
+                {filteredTickets.slice(0, 5).map((ticket) => (
+                  <Paper key={ticket.id} component={Link} to={`/user/tickets/${ticket.id}`} elevation={0} className="block rounded-lg border border-slate-200 p-4 active:bg-blue-50">
+                    <div className="flex min-w-0 items-start gap-3">
+                      <div
+                        className="grid h-12 w-12 shrink-0 place-items-center rounded-lg [&>svg]:text-[26px]"
+                        style={{ color: getTypeStyle(ticket.problemType).color, backgroundColor: getTypeStyle(ticket.problemType).bg }}
+                      >
+                        {getTypeStyle(ticket.problemType).icon}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex min-w-0 items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="truncate text-base font-extrabold text-slate-950">{ticket.reference}</p>
+                            <p className="mt-1 line-clamp-2 text-sm font-semibold text-slate-700">{ticket.title}</p>
+                          </div>
+                          <ChevronRightOutlinedIcon className="shrink-0 text-slate-400" />
+                        </div>
+                        <div className="mt-3 grid grid-cols-2 gap-2 text-sm text-slate-600">
+                          <span className="inline-flex min-w-0 items-center gap-1.5">
+                            <AccountBalanceOutlinedIcon sx={{ fontSize: 18, color: "#64748b" }} />
+                            <span className="truncate">{ticket.service.name}</span>
+                          </span>
+                          <span className="inline-flex min-w-0 items-center gap-1.5">
+                            <span className="grid h-5 w-5 place-items-center [&>svg]:text-[18px]" style={{ color: getTypeStyle(ticket.problemType).color }}>
+                              {getTypeStyle(ticket.problemType).icon}
+                            </span>
+                            <span className="truncate">{problemTypeLabels[ticket.problemType] ?? ticket.problemType}</span>
+                          </span>
+                        </div>
+                        <div className="mt-3 flex flex-wrap items-center gap-2">
+                          <PriorityChip priority={ticket.priority} />
+                          <StatusChip status={ticket.status} />
+                          <span className="text-xs font-semibold text-slate-500">{formatDate(ticket.createdAt, "DD/MM/YYYY HH:mm")}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Paper>
+                ))}
+              </div>
+              <TableContainer sx={{ display: { xs: "none", md: "block" }, maxWidth: "100%", overflowX: "auto" }}>
                 <Table sx={{ minWidth: 760, width: "100%", tableLayout: "fixed" }}>
                   <TableHead>
                     <TableRow sx={{ "& th": { fontWeight: 800, color: "#0f172a", bgcolor: "#fbfdff", borderColor: "#e2e8f0" } }}>

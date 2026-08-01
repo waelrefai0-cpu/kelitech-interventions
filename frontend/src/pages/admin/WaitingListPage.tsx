@@ -130,12 +130,12 @@ export function WaitingListPage() {
 
   return (
     <>
-      <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-950">File d'attente des interventions</h1>
-          <p className="mt-2 text-sm text-slate-500">Voici la liste des demandes en attente de traitement.</p>
+      <div className="mb-5 flex min-w-0 flex-col gap-4 sm:mb-6 xl:flex-row xl:items-start xl:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-3xl font-bold leading-tight text-slate-950 sm:text-2xl">File d'attente des interventions</h1>
+          <p className="mt-2 text-base text-slate-500 sm:text-sm">Voici la liste des demandes en attente de traitement.</p>
         </div>
-        <Button variant="outlined" startIcon={<RefreshOutlinedIcon />} onClick={refresh}>
+        <Button variant="outlined" startIcon={<RefreshOutlinedIcon />} onClick={refresh} sx={{ width: { xs: "100%", sm: "auto" }, minHeight: 44 }}>
           Actualiser
         </Button>
       </div>
@@ -178,7 +178,7 @@ export function WaitingListPage() {
           </div>
 
           <Paper elevation={0} className="overflow-hidden rounded-lg border border-slate-200 shadow-soft">
-            <div className="grid grid-cols-5 border-b border-slate-200 px-3">
+            <div className="scrollbar-thin flex overflow-x-auto border-b border-slate-200 px-3">
               {tabs.map((tab) => {
                 const count = tab.priority ? tickets.filter((ticket) => ticket.priority === tab.priority).length : tickets.length;
                 const isActive = activeTab === tab.value;
@@ -188,18 +188,69 @@ export function WaitingListPage() {
                     type="button"
                     onClick={() => setActiveTab(tab.value)}
                     className={[
-                      "flex min-h-16 items-center justify-center gap-2 border-b-2 px-1 text-sm font-bold transition",
+                      "flex min-h-14 shrink-0 items-center justify-center gap-2 border-b-2 px-4 text-sm font-bold transition sm:min-h-16 sm:flex-1 sm:px-1",
                       isActive ? "border-blue-600 text-slate-950" : "border-transparent text-slate-600 hover:text-blue-700",
                     ].join(" ")}
                   >
-                    {tab.label}
+                    <span className="whitespace-nowrap">{tab.label}</span>
                     <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-700">{count}</span>
                   </button>
                 );
               })}
             </div>
 
-            <TableContainer>
+            <div className="grid gap-3 p-4 md:hidden">
+              {filteredTickets.map((ticket) => {
+                const position = tickets.findIndex((item) => item.id === ticket.id) + 1;
+                const canOpen = isAdminView || ticket.requesterId === user?.id;
+                const isCurrentUserTicket = ticket.requesterId === user?.id;
+                const ticketPath = isAdminView ? `/admin/tickets/${ticket.id}` : `/user/tickets/${ticket.id}`;
+                const content = (
+                  <div className={["rounded-lg border p-4", isCurrentUserTicket ? "border-blue-300 bg-blue-50" : "border-slate-200 bg-white"].join(" ")}>
+                    <div className="flex items-start gap-3">
+                      <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-lg text-base font-bold ${rankTone[ticket.priority] ?? "bg-slate-50 text-slate-700"}`}>{position}</span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex min-w-0 items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="truncate text-base font-extrabold text-slate-950">{ticket.reference}</p>
+                            <p className="mt-1 line-clamp-2 text-sm font-semibold text-slate-700">{ticket.title}</p>
+                          </div>
+                          {canOpen ? <KeyboardArrowRightOutlinedIcon className="shrink-0 text-slate-400" /> : null}
+                        </div>
+                        <p className="mt-1 text-xs text-slate-500">Cree le {formatDate(ticket.createdAt)}</p>
+                        <div className="mt-3 grid grid-cols-2 gap-2 text-sm text-slate-600">
+                          <span className="inline-flex min-w-0 items-center gap-1.5">
+                            <ApartmentOutlinedIcon sx={{ fontSize: 18 }} />
+                            <span className="truncate">{ticket.service.name}</span>
+                          </span>
+                          <span className="inline-flex min-w-0 items-center gap-1.5">
+                            <TypeIcon type={ticket.problemType} />
+                            <span className="truncate">{problemTypeLabels[ticket.problemType]}</span>
+                          </span>
+                        </div>
+                        <div className="mt-3 flex flex-wrap items-center gap-2">
+                          <span className={`rounded-lg px-2 py-1 text-xs font-bold ${priorityTone[ticket.priority] ?? "bg-slate-100 text-slate-700"}`}>{priorityLabels[ticket.priority] ?? ticket.priority}</span>
+                          <span className="inline-flex items-center gap-1 text-xs font-bold text-orange-600">
+                            <AccessTimeOutlinedIcon fontSize="small" />
+                            {waitLabel(waitMinutes(ticket, now))}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+
+                return canOpen ? (
+                  <Link key={ticket.id} to={ticketPath} className="block">
+                    {content}
+                  </Link>
+                ) : (
+                  <div key={ticket.id}>{content}</div>
+                );
+              })}
+            </div>
+
+            <TableContainer sx={{ display: { xs: "none", md: "block" }, maxWidth: "100%", overflowX: "auto" }}>
               <Table sx={{ tableLayout: "fixed", width: "100%" }}>
                 <TableHead>
                   <TableRow>
