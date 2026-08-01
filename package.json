@@ -20,7 +20,6 @@
     "deploy:init-db": "npm run deploy:init-db --workspace backend"
   },
   "devDependencies": {
-    "@rollup/rollup-win32-x64-msvc": "^4.61.1",
     "@vitejs/plugin-react": "^4.7.0",
     "concurrently": "^9.1.0",
     "csstype": "^3.2.3",
