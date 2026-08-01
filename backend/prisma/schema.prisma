@@ -1,0 +1,297 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+  TECHNICIAN
+}
+
+enum TicketStatus {
+  NEW
+  WAITING
+  IN_PROGRESS
+  WAITING_HARDWARE
+  RESOLVED
+  VALIDATED
+  CLOSED
+  CANCELED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ProblemType {
+  HARDWARE
+  SOFTWARE
+  NETWORK
+  PRINTER
+  SECURITY
+  OTHER
+}
+
+enum EquipmentType {
+  PC
+  PRINTER
+  SERVER
+  SWITCH
+  ROUTER
+  IP_CAMERA
+  OTHER
+}
+
+enum EquipmentStatus {
+  IN_SERVICE
+  MAINTENANCE
+  OUT_OF_SERVICE
+  REFORMED
+  STOCK
+}
+
+enum StockCategory {
+  TONER
+  CABLE
+  MOUSE
+  KEYBOARD
+  RAM
+  DISK
+  OTHER
+}
+
+enum NotificationType {
+  TICKET_CREATED
+  STATUS_CHANGED
+  TICKET_ASSIGNED
+  STOCK_LOW
+  SCHEDULED
+}
+
+model Department {
+  id        String    @id @default(uuid())
+  name      String
+  code      String    @unique
+  services  Service[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Service {
+  id           String      @id @default(uuid())
+  name         String
+  code         String      @unique
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  users        User[]
+  tickets      Ticket[]
+  equipment    Equipment[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model AppOption {
+  id        String   @id @default(uuid())
+  category  String
+  value     String
+  label     String
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([category, value])
+  @@index([category, sortOrder])
+}
+
+model User {
+  id                 String                 @id @default(uuid())
+  email              String                 @unique
+  passwordHash       String
+  firstName          String
+  lastName           String
+  role               Role                   @default(USER)
+  phone              String?
+  serviceId          String?
+  service            Service?               @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  requestedTickets   Ticket[]               @relation("RequestedTickets")
+  assignedTickets    Ticket[]               @relation("AssignedTickets")
+  equipment          Equipment[]
+  ticketHistories    TicketHistory[]
+  equipmentHistories EquipmentHistory[]
+  attachments        Attachment[]
+  notifications      Notification[]
+  schedules          InterventionSchedule[]
+  knowledgeEntries   KnowledgeBase[]
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+}
+
+model Ticket {
+  id               String                 @id @default(uuid())
+  reference        String                 @unique
+  title            String
+  description      String
+  problemType      String
+  priority         String                 @default("MEDIUM")
+  status           String                 @default("NEW")
+  serviceId        String
+  service          Service                @relation(fields: [serviceId], references: [id])
+  requesterId      String
+  requester        User                   @relation("RequestedTickets", fields: [requesterId], references: [id])
+  technicianId     String?
+  technician       User?                  @relation("AssignedTickets", fields: [technicianId], references: [id], onDelete: SetNull)
+  equipmentId      String?
+  equipment        Equipment?             @relation(fields: [equipmentId], references: [id], onDelete: SetNull)
+  diagnostic       String?
+  solution         String?
+  timeSpentMinutes Int?
+  isArchived       Boolean                @default(false)
+  resolvedAt       DateTime?
+  closedAt         DateTime?
+  archivedAt       DateTime?
+  histories        TicketHistory[]
+  attachments      Attachment[]
+  schedules        InterventionSchedule[]
+  notifications    Notification[]
+  equipmentEvents  EquipmentHistory[]
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+
+  @@index([status, priority, createdAt])
+  @@index([serviceId])
+  @@index([requesterId])
+  @@index([technicianId])
+}
+
+model TicketHistory {
+  id          String        @id @default(uuid())
+  ticketId    String
+  ticket      Ticket        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  action      String
+  fromStatus  String?
+  toStatus    String?
+  message     String?
+  metadata    Json?
+  createdById String?
+  createdBy   User?         @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime      @default(now())
+}
+
+model Equipment {
+  id              String             @id @default(uuid())
+  inventoryNumber String             @unique
+  name            String
+  type            EquipmentType
+  brand           String?
+  model           String?
+  ipAddress       String?
+  macAddress      String?
+  system          String?
+  ram             String?
+  storage         String?
+  status          EquipmentStatus    @default(IN_SERVICE)
+  acquisitionDate DateTime?
+  serviceId       String?
+  service         Service?           @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  userId          String?
+  user            User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  notes           String?
+  tickets         Ticket[]
+  histories       EquipmentHistory[]
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([serviceId])
+  @@index([userId])
+  @@index([type, status])
+}
+
+model EquipmentHistory {
+  id           String    @id @default(uuid())
+  equipmentId  String
+  equipment    Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  ticketId     String?
+  ticket       Ticket?   @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+  action       String
+  description  String?
+  createdById  String?
+  createdBy    User?     @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt    DateTime  @default(now())
+}
+
+model Attachment {
+  id           String   @id @default(uuid())
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  path         String
+  ticketId     String
+  ticket       Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  uploadedById String?
+  uploadedBy   User?    @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  type      NotificationType
+  title     String
+  message   String
+  readAt    DateTime?
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ticketId  String?
+  ticket    Ticket?          @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  createdAt DateTime         @default(now())
+}
+
+model InterventionSchedule {
+  id           String       @id @default(uuid())
+  title        String
+  description  String?
+  startAt      DateTime
+  endAt        DateTime
+  status       String       @default("WAITING")
+  ticketId     String?
+  ticket       Ticket?      @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+  technicianId String?
+  technician   User?        @relation(fields: [technicianId], references: [id], onDelete: SetNull)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model KnowledgeBase {
+  id          String      @id @default(uuid())
+  title       String
+  content     String
+  problemType String
+  tags        String[]    @default([])
+  createdById String?
+  createdBy   User?       @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model StockItem {
+  id              String        @id @default(uuid())
+  name            String
+  category        StockCategory
+  quantity        Int           @default(0)
+  minimumQuantity Int           @default(1)
+  unit            String        @default("piece")
+  location        String?
+  supplier        String?
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}

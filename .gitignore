@@ -1,0 +1,14 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+.DS_Store
+Thumbs.db
+coverage/
+backend/uploads/
+backend/prisma/migrations/
+*.log
+logs/
+tools/
+*.zip

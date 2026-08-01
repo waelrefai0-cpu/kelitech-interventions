@@ -1,0 +1,34 @@
+{
+  "name": "kelitech-interventions",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Plateforme de gestion des interventions informatiques de la Municipalite de Kelibia",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "npm run dev --workspace backend",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "build": "npm run build --workspace backend && npm run build --workspace frontend",
+    "typecheck": "npm run typecheck --workspace backend && npm run typecheck --workspace frontend",
+    "lint": "npm run lint --workspace frontend",
+    "db:generate": "npm run prisma:generate --workspace backend",
+    "db:push": "npm run prisma:push --workspace backend",
+    "db:seed": "npm run prisma:seed --workspace backend",
+    "deploy:init-db": "npm run deploy:init-db --workspace backend"
+  },
+  "devDependencies": {
+    "@rollup/rollup-win32-x64-msvc": "^4.61.1",
+    "@vitejs/plugin-react": "^4.7.0",
+    "concurrently": "^9.1.0",
+    "csstype": "^3.2.3",
+    "node-releases": "^2.0.47",
+    "postcss-selector-parser": "^7.1.2",
+    "vite": "^6.4.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
