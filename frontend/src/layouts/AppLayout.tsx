@@ -72,6 +72,14 @@ export function AppLayout({ variant }: { variant: "admin" | "user" }) {
       ? "File d'attente des interventions"
       : pathname.includes("new-ticket")
         ? "Nouvelle demande"
+        : pathname.includes("users")
+          ? "Utilisateurs"
+          : pathname.includes("tickets")
+            ? "Demandes"
+            : pathname.includes("reports")
+              ? "Rapports"
+              : pathname.includes("settings")
+                ? "Parametres"
         : variant === "user"
           ? "Mes interventions"
           : "Gestion des interventions informatiques";
@@ -168,16 +176,20 @@ export function AppLayout({ variant }: { variant: "admin" | "user" }) {
         position="fixed"
         elevation={0}
         sx={{
-          width: { md: `calc(100% - ${drawerWidth}px)` },
+          left: { xs: 0, md: "auto" },
+          right: 0,
+          width: { xs: "100vw", md: `calc(100% - ${drawerWidth}px)` },
+          maxWidth: "100vw",
           ml: { md: `${drawerWidth}px` },
+          overflowX: "hidden",
           bgcolor: "rgba(255,255,255,0.96)",
           color: "#0f172a",
           borderBottom: "1px solid #e2e8f0",
           backdropFilter: "blur(14px)",
         }}
       >
-        <Toolbar sx={{ minHeight: 80, gap: { xs: 1.25, sm: 2 }, px: { xs: 1.5, sm: 2, lg: 4 } }}>
-          <IconButton color="inherit" edge="start" onClick={() => setMobileOpen(true)} sx={{ display: { md: "none" } }}>
+        <Toolbar sx={{ minHeight: 80, width: "100%", maxWidth: "100vw", overflow: "hidden", gap: { xs: 0.75, sm: 2 }, px: { xs: 1, sm: 2, lg: 4 } }}>
+          <IconButton color="inherit" edge="start" onClick={() => setMobileOpen(true)} sx={{ display: { md: "none" }, flexShrink: 0, p: { xs: 0.75, sm: 1 } }}>
             <MenuIcon />
           </IconButton>
           {variant === "user" ? null : <ViewListOutlinedIcon sx={{ display: { xs: "none", sm: "block" }, color: "#2563eb" }} />}
@@ -185,7 +197,7 @@ export function AppLayout({ variant }: { variant: "admin" | "user" }) {
             {pageTitle}
           </Typography>
           <Tooltip title="Notifications">
-            <IconButton sx={{ mr: { xs: 0, sm: 1 } }} onClick={openNotifications}>
+            <IconButton sx={{ flexShrink: 0, p: { xs: 0.75, sm: 1 }, mr: { xs: 0, sm: 1 } }} onClick={openNotifications}>
               <Badge color="error" badgeContent={unreadCount} max={99}>
                 <NotificationsNoneOutlinedIcon />
               </Badge>
@@ -222,8 +234,8 @@ export function AppLayout({ variant }: { variant: "admin" | "user" }) {
               <div className="px-4 py-8 text-center text-sm text-slate-500">Aucune notification</div>
             )}
           </Menu>
-          <div className="flex min-w-0 items-center gap-3">
-            <Avatar sx={{ width: { xs: 40, sm: 44 }, height: { xs: 40, sm: 44 }, bgcolor: "#2563eb", fontWeight: 800 }}>{initials(user?.firstName, user?.lastName)}</Avatar>
+          <div className="flex shrink-0 items-center gap-3">
+            <Avatar sx={{ width: { xs: 38, sm: 44 }, height: { xs: 38, sm: 44 }, bgcolor: "#2563eb", fontWeight: 800 }}>{initials(user?.firstName, user?.lastName)}</Avatar>
             <span className="hidden text-left leading-tight md:block">
               <span className="block text-sm font-bold">{user ? `${user.firstName} ${user.lastName}` : "KeliTech"}</span>
               <span className="block text-xs text-slate-500">{user ? roleLabels[user.role] : ""}</span>
@@ -257,7 +269,7 @@ export function AppLayout({ variant }: { variant: "admin" | "user" }) {
         </Drawer>
       </Box>
 
-      <Box component="main" sx={{ minWidth: 0, maxWidth: "100vw", overflowX: "hidden", flexGrow: 1, width: { xs: "100%", md: `calc(100% - ${drawerWidth}px)` }, pt: 12, px: { xs: 1.5, sm: 2, lg: variant === "user" ? 3 : 4 }, pb: 5 }}>
+      <Box component="main" sx={{ minWidth: 0, maxWidth: "100vw", overflowX: "clip", flexGrow: 1, width: { xs: "100vw", md: `calc(100% - ${drawerWidth}px)` }, pt: 12, px: { xs: 1.5, sm: 2, lg: variant === "user" ? 3 : 4 }, pb: 5 }}>
         <Outlet />
       </Box>
     </Box>

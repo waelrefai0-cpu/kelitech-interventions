@@ -6,6 +6,12 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 :root {
   color: #0f172a;
   background: #f8fafc;
@@ -17,6 +23,8 @@
 }
 
 body {
+  width: 100%;
+  max-width: 100%;
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
@@ -28,6 +36,8 @@ body {
 }
 
 #root {
+  width: 100%;
+  max-width: 100%;
   min-height: 100vh;
   overflow-x: hidden;
 }
