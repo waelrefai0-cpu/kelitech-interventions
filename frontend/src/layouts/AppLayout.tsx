@@ -163,7 +163,7 @@ export function AppLayout({ variant }: { variant: "admin" | "user" }) {
   );
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f8fafc" }}>
+    <Box sx={{ display: "flex", minHeight: "100vh", maxWidth: "100vw", overflowX: "hidden", bgcolor: "#f8fafc" }}>
       <AppBar
         position="fixed"
         elevation={0}
@@ -176,16 +176,16 @@ export function AppLayout({ variant }: { variant: "admin" | "user" }) {
           backdropFilter: "blur(14px)",
         }}
       >
-        <Toolbar sx={{ minHeight: 80, gap: 2, px: { xs: 2, lg: 4 } }}>
+        <Toolbar sx={{ minHeight: 80, gap: { xs: 1.25, sm: 2 }, px: { xs: 1.5, sm: 2, lg: 4 } }}>
           <IconButton color="inherit" edge="start" onClick={() => setMobileOpen(true)} sx={{ display: { md: "none" } }}>
             <MenuIcon />
           </IconButton>
           {variant === "user" ? null : <ViewListOutlinedIcon sx={{ display: { xs: "none", sm: "block" }, color: "#2563eb" }} />}
-          <Typography variant="body1" sx={{ flexGrow: 1, color: variant === "user" ? "#0f172a" : "#5b6b86", fontWeight: 700 }}>
+          <Typography variant="body1" noWrap sx={{ minWidth: 0, flexGrow: 1, color: variant === "user" ? "#0f172a" : "#5b6b86", fontWeight: 700 }}>
             {pageTitle}
           </Typography>
           <Tooltip title="Notifications">
-            <IconButton sx={{ mr: 1 }} onClick={openNotifications}>
+            <IconButton sx={{ mr: { xs: 0, sm: 1 } }} onClick={openNotifications}>
               <Badge color="error" badgeContent={unreadCount} max={99}>
                 <NotificationsNoneOutlinedIcon />
               </Badge>
@@ -223,7 +223,7 @@ export function AppLayout({ variant }: { variant: "admin" | "user" }) {
             )}
           </Menu>
           <div className="flex min-w-0 items-center gap-3">
-            <Avatar sx={{ width: 44, height: 44, bgcolor: "#2563eb", fontWeight: 800 }}>{initials(user?.firstName, user?.lastName)}</Avatar>
+            <Avatar sx={{ width: { xs: 40, sm: 44 }, height: { xs: 40, sm: 44 }, bgcolor: "#2563eb", fontWeight: 800 }}>{initials(user?.firstName, user?.lastName)}</Avatar>
             <span className="hidden text-left leading-tight md:block">
               <span className="block text-sm font-bold">{user ? `${user.firstName} ${user.lastName}` : "KeliTech"}</span>
               <span className="block text-xs text-slate-500">{user ? roleLabels[user.role] : ""}</span>
@@ -257,7 +257,7 @@ export function AppLayout({ variant }: { variant: "admin" | "user" }) {
         </Drawer>
       </Box>
 
-      <Box component="main" sx={{ flexGrow: 1, width: { md: `calc(100% - ${drawerWidth}px)` }, pt: 12, px: { xs: 2, lg: variant === "user" ? 3 : 4 }, pb: 5 }}>
+      <Box component="main" sx={{ minWidth: 0, maxWidth: "100vw", overflowX: "hidden", flexGrow: 1, width: { xs: "100%", md: `calc(100% - ${drawerWidth}px)` }, pt: 12, px: { xs: 1.5, sm: 2, lg: variant === "user" ? 3 : 4 }, pb: 5 }}>
         <Outlet />
       </Box>
     </Box>

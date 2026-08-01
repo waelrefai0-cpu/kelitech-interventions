@@ -183,7 +183,39 @@ export function UsersPage() {
       {loading ? <LoadingBlock /> : null}
       {!loading && data?.length === 0 ? <EmptyBlock label="Aucun utilisateur" /> : null}
       {!loading && data?.length ? (
-        <TableContainer component={Paper} elevation={0} className="rounded-lg border border-slate-200 shadow-soft">
+        <>
+        <div className="grid gap-3 md:hidden">
+          {data.map((user) => (
+            <Paper key={user.id} elevation={0} className="rounded-lg border border-slate-200 p-4 shadow-soft">
+              <div className="flex min-w-0 items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate text-base font-extrabold text-slate-950">{fullName(user)}</p>
+                  <p className="mt-1 truncate text-sm text-slate-500">{user.email}</p>
+                  <p className="mt-1 truncate text-sm text-slate-500">{user.service?.name ?? "Non rattache"} · {user.phone ?? "-"}</p>
+                </div>
+                <Chip className="shrink-0" label={roleLabels[user.role]} size="small" color={user.role === "ADMIN" ? "primary" : "default"} />
+              </div>
+              <div className="mt-3 flex justify-end gap-1">
+                <Tooltip title="Voir">
+                  <IconButton onClick={() => openView(user)}>
+                    <VisibilityOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Modifier">
+                  <IconButton color="primary" onClick={() => openEditForm(user)}>
+                    <EditOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Supprimer">
+                  <IconButton color="error" onClick={() => deleteUser(user)}>
+                    <DeleteOutlineOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
+              </div>
+            </Paper>
+          ))}
+        </div>
+        <TableContainer component={Paper} elevation={0} className="hidden rounded-lg border border-slate-200 shadow-soft md:block" sx={{ maxWidth: "100%", overflowX: "auto" }}>
           <Table>
             <TableHead>
               <TableRow>
@@ -227,6 +259,7 @@ export function UsersPage() {
             </TableBody>
           </Table>
         </TableContainer>
+        </>
       ) : null}
     </>
   );

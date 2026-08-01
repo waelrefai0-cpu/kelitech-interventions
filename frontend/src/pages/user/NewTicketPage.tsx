@@ -62,7 +62,7 @@ export function NewTicketPage() {
   return (
     <>
       <PageHeader title="Nouveau ticket" subtitle="Creation d'une demande d'intervention informatique" />
-      <Paper elevation={0} className="max-w-4xl rounded-lg border border-slate-200 p-5 shadow-soft">
+      <Paper elevation={0} className="w-full max-w-4xl rounded-lg border border-slate-200 p-4 shadow-soft sm:p-5">
         {error ? (
           <Alert severity="error" className="mb-4">
             {error}
@@ -131,8 +131,8 @@ export function NewTicketPage() {
               {files?.length ? `${files.length} fichier(s) selectionne(s)` : "Aucun fichier selectionne"}
             </p>
           </div>
-          <div className="md:col-span-2 flex justify-end">
-            <Button type="submit" variant="contained" size="large" startIcon={<SendOutlinedIcon />} disabled={loading}>
+          <div className="flex justify-end md:col-span-2">
+            <Button type="submit" variant="contained" size="large" startIcon={<SendOutlinedIcon />} disabled={loading} sx={{ width: { xs: "100%", sm: "auto" } }}>
               {loading ? "Envoi..." : "Envoyer"}
             </Button>
           </div>

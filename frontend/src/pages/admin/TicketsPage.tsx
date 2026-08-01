@@ -111,7 +111,27 @@ export function TicketsPage() {
       {loading ? <LoadingBlock /> : null}
       {!loading && data?.items.length === 0 ? <EmptyBlock label="Aucune demande" /> : null}
       {!loading && data?.items.length ? (
-        <TableContainer component={Paper} elevation={0} className="rounded-lg border border-slate-200 shadow-soft">
+        <>
+        <div className="grid gap-3 md:hidden">
+          {data.items.map((ticket) => (
+            <Paper key={ticket.id} component={Link} to={`/admin/tickets/${ticket.id}`} elevation={0} className="block rounded-lg border border-slate-200 p-4 shadow-soft active:bg-blue-50">
+              <div className="flex min-w-0 items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate text-base font-extrabold text-blue-700">{ticket.reference}</p>
+                  <p className="mt-1 truncate text-sm font-semibold text-slate-950">{fullName(ticket.requester)}</p>
+                  <p className="mt-1 truncate text-sm text-slate-500">{ticket.service.name} · {problemTypeLabels[ticket.problemType]}</p>
+                </div>
+                <span className="shrink-0 text-xs font-semibold text-slate-500">{formatDate(ticket.createdAt, "DD/MM")}</span>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <PriorityChip priority={ticket.priority} />
+                <StatusChip status={ticket.status} />
+              </div>
+              <p className="mt-3 truncate text-sm text-slate-500">Technicien: {fullName(ticket.technician)}</p>
+            </Paper>
+          ))}
+        </div>
+        <TableContainer component={Paper} elevation={0} className="hidden rounded-lg border border-slate-200 shadow-soft md:block" sx={{ maxWidth: "100%", overflowX: "auto" }}>
           <Table>
             <TableHead>
               <TableRow>
@@ -145,6 +165,7 @@ export function TicketsPage() {
             </TableBody>
           </Table>
         </TableContainer>
+        </>
       ) : null}
     </>
   );

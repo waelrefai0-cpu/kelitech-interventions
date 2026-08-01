@@ -181,7 +181,7 @@ export function MyTicketsPage() {
                 </MenuItem>
               ))}
             </TextField>
-            <TextField size="small" select label="Service" value={service} onChange={(event) => setService(event.target.value)} className="hidden xl:block">
+            <TextField size="small" select label="Service" value={service} onChange={(event) => setService(event.target.value)} sx={{ display: { xs: "none", xl: "block" } }}>
               <MenuItem value="">Tous</MenuItem>
               {services.map((serviceName) => (
                 <MenuItem key={serviceName} value={serviceName}>
@@ -189,7 +189,7 @@ export function MyTicketsPage() {
                 </MenuItem>
               ))}
             </TextField>
-            <TextField size="small" select label="Type" value={problemType} onChange={(event) => setProblemType(event.target.value as ProblemType | "")} className="hidden xl:block">
+            <TextField size="small" select label="Type" value={problemType} onChange={(event) => setProblemType(event.target.value as ProblemType | "")} sx={{ display: { xs: "none", xl: "block" } }}>
               <MenuItem value="">Tous</MenuItem>
               {problemTypeOptions.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
@@ -197,10 +197,10 @@ export function MyTicketsPage() {
                 </MenuItem>
               ))}
             </TextField>
-            <Button variant="outlined" startIcon={<RefreshOutlinedIcon />} onClick={resetFilters} sx={{ minHeight: 40, overflow: "hidden" }}>
+            <Button variant="outlined" startIcon={<RefreshOutlinedIcon />} onClick={resetFilters} sx={{ minHeight: 40, overflow: "hidden", width: { xs: "100%", lg: "auto" } }}>
               Reinitialiser
             </Button>
-            <Button variant="outlined" startIcon={<FilterAltOutlinedIcon />} sx={{ display: { xs: "inline-flex", xl: "none" }, minHeight: 40 }}>
+            <Button variant="outlined" startIcon={<FilterAltOutlinedIcon />} sx={{ display: { xs: "inline-flex", xl: "none" }, minHeight: 40, width: { xs: "100%", lg: "auto" } }}>
               Filtres
             </Button>
           </div>

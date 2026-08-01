@@ -141,7 +141,7 @@ export function WaitingListPage() {
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr),306px]">
-        <div className="min-w-0 space-y-5">
+        <div className="min-w-0 space-y-5 xl:order-1">
           <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr),188px,194px,112px]">
             <TextField
               size="small"
@@ -340,7 +340,7 @@ export function WaitingListPage() {
           </Paper>
         </div>
 
-        <aside className="grid gap-5 min-[900px]:grid-cols-2 xl:block xl:space-y-5">
+        <aside className="order-first grid gap-5 min-[900px]:grid-cols-2 xl:order-2 xl:block xl:space-y-5">
           {!isAdminView ? (
             <Paper elevation={0} className="rounded-lg border border-slate-200 p-5 shadow-soft">
               <h2 className="text-base font-bold text-slate-950">Votre position dans la file d'attente</h2>
